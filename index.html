@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     
     <!-- jquery.min.js -->
@@ -16,7 +17,7 @@
         .link { stroke: #ccc; }
         .nodetext { pointer-events: none; font: 10px sans-serif; }
         body { width:100%; height:100%; margin:none; padding:none; }
-        #graph { width:500px;height:500px; border:3px solid black;border-radius:12px; margin:auto; }
+        #graph { width:500px;height:500px; border:1px solid #989898;border-radius:12px; margin:auto; }
     </style>
     <script type="text/javascript" src="myscr.js"></script>
 </head>
@@ -27,6 +28,7 @@
       <div class="container-fluid">
           
         <div class="navbar-brand" >SAVI</div>
+        <div class="navbar-brand" >VINO</div>
         
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -77,10 +79,57 @@
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
-
-<div id="graph"></div>
-
-
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 ">
+                <div class="row">
+                    <div class="col-md-11 shadow-container"> 
+                        <div class="panel-body">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input id="add-node-name" class="form-control" placeholder="Name" name="name" type="text">
+                                </div>
+                                <button id="add-node" class="btn btn-lg btn-success btn-block">Add Node</button>
+                            </fieldset>
+                        </div> 
+                    </div> 
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-11 shadow-container"> 
+                        <div class="panel-body">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input id="link-node-name1" class="form-control" placeholder="Name of First Node" name="name" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <input id="link-node-name2" class="form-control" placeholder="Name of Second Node" name="name" type="text">
+                                </div>
+                                <button id="link-node" class="btn btn-lg btn-info btn-block">Link Nodes</button>
+                            </fieldset>
+                        </div> 
+                    </div> 
+                </div>
+    
+                <div class="row">
+                    <div class="col-md-11 shadow-container"> 
+                        <div class="panel-body">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input id="remove-node-name" class="form-control" placeholder="Name" name="name" type="text">
+                                </div>
+                                <button id="remove-node" class="btn btn-lg btn-danger btn-block">Remove Node</button>
+                            </fieldset>
+                        </div> 
+                    </div> 
+                </div>
+    
+            </div>
+            <div class="col-md-6">
+                <div id="graph"></div>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

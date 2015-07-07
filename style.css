@@ -1,0 +1,7 @@
+.shadow-container{
+    border: 1px solid #989898;
+    box-sizing: border-box;
+    padding: 10px;
+    border-radius: 7px;
+    margin-bottom: 15px;
+}

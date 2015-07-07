@@ -30,6 +30,11 @@ function myGraph(el) {
         }
     }
 
+    //Mesh together nodes in arr 
+    this.mesh = function(arr){
+        
+    }
+
     var findNode = function (id) {
         for (var i=0; i < nodes.length; i++) {
             if (nodes[i].id === id)
@@ -111,15 +116,54 @@ function myGraph(el) {
     update();
 }
 
+function savi(){
+    var keystone = "http://iam.savitestbed.ca:5000/v2.0/"
+    
+    this.getResults = function(){
+    $.get( keystone, function( data ) {
+      $( ".result" ).html( data );
+        alert( "Load was performed." );
+        });
+     }
+}
+
 $(document).ready(function(){
     //Initialize graph object
     graph = new myGraph("#graph");
     
-    graph.addNode("Cause");
-    graph.addNode("Effect");
-    graph.addLink("Cause", "Effect");
-      
     graph.addNode("A");
     graph.addNode("B");
-    graph.addLink("A", "B");    
+    graph.addLink("A", "B");
+      
+    graph.addNode("C");
+    graph.addNode("D");
+    graph.addLink("C", "D");    
+    
+    //Get keystone token
+    sv = new savi();
+    sv.getResults();
+
+    //Create a new node
+    $("#add-node").click(
+        function(){
+            var name = $("#add-node-name").val()
+            graph.addNode(name);
+        }
+    );
+    
+    $("#link-node").click(
+        function(){
+            var name1 = $("#link-node-name1").val()
+            var name2 = $("#link-node-name2").val()
+            graph.addLink(name1, name2);
+        }
+    );
+
+    $("#remove-node").click(
+        function(){
+            var name = $("#remove-node-name").val()
+            graph.removeNode(name);
+        }
+    );
+
 });
