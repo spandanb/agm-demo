@@ -1,8 +1,40 @@
+function allowDrop(ev){
+    ev.preventDefault();
+}
+
+function drag(ev){
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev){
+    ev.preventDefault();
+
+    //This could be any property specified in the drag function
+    var id = ev.dataTransfer.getData("text");
+    var el = document.getElementById(id);
+    ev.target.appendChild(el.cloneNode(true));
+    graph.addNode("X", id);
+}
+
+
 function myGraph(el) {
 
+    this.randId = function(){
+        //Returns a random 3 character string
+        var chars = "abcdefghijklmnopqrstvuwxyz";
+        var randInd = function(){
+            return Math.floor(Math.random() * 26)
+        }
+        return chars[randInd()] + chars[randInd()] + chars[randInd()];
+    }
+
     // Add and remove elements on the graph object
-    this.addNode = function (id) {
-        nodes.push({"id":id});
+    this.addNode = function (id, type, name) {
+        id = id || randId();
+        //Set default if not specified
+        type = type || "server1"; 
+        nodes.push({"id": id, "type": type});
+        console.log(nodes);
         update();
     }
 
@@ -30,11 +62,6 @@ function myGraph(el) {
         }
     }
 
-    //Mesh together nodes in arr 
-    this.mesh = function(arr){
-        
-    }
-
     var findNode = function (id) {
         for (var i=0; i < nodes.length; i++) {
             if (nodes[i].id === id)
@@ -55,7 +82,9 @@ function myGraph(el) {
 
     var vis = this.vis = d3.select(el).append("svg:svg")
         .attr("width", w)
-        .attr("height", h);
+        .attr("height", h)
+        .attr("ondrop", "drop(event)")
+        .attr("ondragover", "allowDrop(event)")
 
     var force = d3.layout.force()
         .gravity(.05)
@@ -85,11 +114,11 @@ function myGraph(el) {
 
         nodeEnter.append("image")
             .attr("class", "circle")
-            .attr("xlink:href", "server.png")
+            .attr("xlink:href", function(d){ return "icons/" + d.type + ".png"})
             .attr("x", "-8px")
             .attr("y", "-8px")
-            .attr("width", "16px")
-            .attr("height", "16px");
+            .attr("width", "32px")
+            .attr("height", "32px");
 
         nodeEnter.append("text")
             .attr("class", "nodetext")
@@ -116,54 +145,38 @@ function myGraph(el) {
     update();
 }
 
-function savi(){
-    var keystone = "http://iam.savitestbed.ca:5000/v2.0/"
-    
-    this.getResults = function(){
-    $.get( keystone, function( data ) {
-      $( ".result" ).html( data );
-        alert( "Load was performed." );
-        });
-     }
-}
 
-$(document).ready(function(){
-    //Initialize graph object
-    graph = new myGraph("#graph");
-    
-    graph.addNode("A");
-    graph.addNode("B");
-    graph.addLink("A", "B");
-      
-    graph.addNode("C");
-    graph.addNode("D");
-    graph.addLink("C", "D");    
-    
-    //Get keystone token
-    sv = new savi();
-    sv.getResults();
+//Initialize graph object
+var graph = new myGraph("#graph");
 
-    //Create a new node
-    $("#add-node").click(
-        function(){
-            var name = $("#add-node-name").val()
-            graph.addNode(name);
-        }
-    );
-    
-    $("#link-node").click(
-        function(){
-            var name1 = $("#link-node-name1").val()
-            var name2 = $("#link-node-name2").val()
-            graph.addLink(name1, name2);
-        }
-    );
+//graph.addNode("A");
+//graph.addNode("B");
+//graph.addLink("A", "B");
+//  
+//graph.addNode("C");
+//graph.addNode("D");
+//graph.addLink("C", "D");    
 
-    $("#remove-node").click(
-        function(){
-            var name = $("#remove-node-name").val()
-            graph.removeNode(name);
-        }
-    );
+//Create a new node
+$("#add-node").click(
+    function(){
+        var name = $("#add-node-name").val()
+        graph.addNode(name);
+    }
+);
 
-});
+$("#link-node").click(
+    function(){
+        var name1 = $("#link-node-name1").val()
+        var name2 = $("#link-node-name2").val()
+        graph.addLink(name1, name2);
+    }
+);
+
+$("#remove-node").click(
+    function(){
+        var name = $("#remove-node-name").val()
+        graph.removeNode(name);
+    }
+);
+

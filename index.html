@@ -4,14 +4,6 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     
-    <!-- jquery.min.js -->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <!-- underscore-min.js -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <!--d3.v2.min.js-->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script> 
-    
-    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     
     <style type="text/css">
         .link { stroke: #ccc; }
@@ -19,7 +11,6 @@
         body { width:100%; height:100%; margin:none; padding:none; }
         #graph { width:500px;height:500px; border:1px solid #989898;border-radius:12px; margin:auto; }
     </style>
-    <script type="text/javascript" src="myscr.js"></script>
 </head>
 <body>
 
@@ -81,7 +72,16 @@
     </nav>
     <div class="container">
         <div class="row">
-            <div class="col-md-6 ">
+            <!-- Left Column -->
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-11 shadow-container"> 
+                        <img id="server1" src="icons/server1.png" alt="" draggable="true" ondragstart="drag(event)">
+                    </div>
+                    <div class="col-md-11 shadow-container"> 
+                        <img id="server2" src="icons/server2.png" alt="" draggable="true" ondragstart="drag(event)">
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-11 shadow-container"> 
                         <div class="panel-body">
@@ -125,11 +125,23 @@
                 </div>
     
             </div>
-            <div class="col-md-6">
-                <div id="graph"></div>
+            <!-- Right Column -->
+            <div class="col-md-8">
+                <div id="graph" ></div>
             </div>
         </div>
     </div>
+
+    <!-- jquery.min.js -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <!-- underscore-min.js -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <!--d3.v2.min.js-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script> 
+    
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="myscr.js"></script>
 
 </body>
 </html>
