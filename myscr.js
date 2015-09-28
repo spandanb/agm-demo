@@ -13,28 +13,26 @@ function drop(ev){
     var id = ev.dataTransfer.getData("text");
     var el = document.getElementById(id);
     ev.target.appendChild(el.cloneNode(true));
-    graph.addNode("X", id);
+    //The id corresponds to the type
+    graph.addNode(null, id);
 }
 
 
 function myGraph(el) {
 
-    this.randId = function(){
-        //Returns a random 3 character string
-        var chars = "abcdefghijklmnopqrstvuwxyz";
-        var randInd = function(){
-            return Math.floor(Math.random() * 26)
-        }
-        return chars[randInd()] + chars[randInd()] + chars[randInd()];
-    }
-
     // Add and remove elements on the graph object
-    this.addNode = function (id, type, name) {
-        id = id || randId();
-        //Set default if not specified
-        type = type || "server1"; 
+    this.addNode = function (id, type) {
+        //Set defaults if values not specified
+        type = type || "server"; 
+        //Need a suitable id
+        if(!id){
+           //Find number of existing nodes
+           //The id is the type + count
+           var counts =  _.countBy(nodes, function(node){ return node.type});
+           id = type + (counts[type] ? counts[type] : '0');
+           console.log(type);
+        }
         nodes.push({"id": id, "type": type});
-        console.log(nodes);
         update();
     }
 
@@ -77,20 +75,13 @@ function myGraph(el) {
     }
 
     // set up the D3 visualisation in the specified element
-    var w = $(el).innerWidth(),
-        h = $(el).innerHeight();
-
-    var vis = this.vis = d3.select(el).append("svg:svg")
-        .attr("width", w)
-        .attr("height", h)
-        .attr("ondrop", "drop(event)")
-        .attr("ondragover", "allowDrop(event)")
+    var vis = this.vis = d3.select("svg");
 
     var force = d3.layout.force()
         .gravity(.05)
         .distance(100)
         .charge(-100)
-        .size([w, h]);
+        .size(["500", "500"]); //The width, height of svg canvas
 
     var nodes = force.nodes(),
         links = force.links();

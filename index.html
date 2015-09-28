@@ -75,15 +75,39 @@
             <!-- Left Column -->
             <div class="col-md-4">
                 <div class="row">
-                    <div class="col-md-11 shadow-container"> 
-                        <img id="server1" src="icons/server1.png" alt="" draggable="true" ondragstart="drag(event)">
+                    <!-- Item 1 -->
+                    <div class="shadow-container row"> 
+                        <div class="item-image-container col-md-4">
+                            <img class="item-image" id="server" src="icons/server.png" alt="" draggable="true" ondragstart="drag(event)">
+                        </div>
+                        <div class="item-text-container col-md-8">
+                            <div class="item-title">Web Server</div>
+                            <div class="item-subtext">An Apache HTTP web server.</div>
+                        </div>
                     </div>
-                    <div class="col-md-11 shadow-container"> 
-                        <img id="server2" src="icons/server2.png" alt="" draggable="true" ondragstart="drag(event)">
+                    <!-- Item 2 -->
+                    <div class="shadow-container row"> 
+                        <div class="item-image-container col-md-4">
+                            <img class="item-image" id="database" src="icons/database.png" alt="" draggable="true" ondragstart="drag(event)">
+                        </div>
+                        <div class="item-text-container col-md-8">
+                            <div class="item-title">Database</div>
+                            <div class="item-subtext">A PostgreSQL database.</div>
+                        </div>
+                    </div>
+                    <!-- Item 3 -->
+                    <div class="shadow-container row"> 
+                        <div class="item-image-container col-md-4">
+                            <img class="item-image" id="vnf" src="icons/vnf.png" alt="" draggable="true" ondragstart="drag(event)">
+                        </div>
+                        <div class="item-text-container col-md-8">
+                            <div class="item-title">VNF: DPI</div>
+                            <div class="item-subtext">A snort based DPI</div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-11 shadow-container"> 
+                    <div class="shadow-container"> 
                         <div class="panel-body">
                             <fieldset>
                                 <div class="form-group">
@@ -96,7 +120,7 @@
                 </div>
                 
                 <div class="row">
-                    <div class="col-md-11 shadow-container"> 
+                    <div class="shadow-container"> 
                         <div class="panel-body">
                             <fieldset>
                                 <div class="form-group">
@@ -112,7 +136,7 @@
                 </div>
     
                 <div class="row">
-                    <div class="col-md-11 shadow-container"> 
+                    <div class="shadow-container"> 
                         <div class="panel-body">
                             <fieldset>
                                 <div class="form-group">
@@ -127,7 +151,9 @@
             </div>
             <!-- Right Column -->
             <div class="col-md-8">
-                <div id="graph" ></div>
+                <div id="graph" >
+                    <svg id="svg" width="500" height="500" ondrop="drop(event)" ondragover="allowDrop(event)"></svg>
+                </div>
             </div>
         </div>
     </div>

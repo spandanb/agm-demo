@@ -5,3 +5,23 @@
     border-radius: 7px;
     margin-bottom: 15px;
 }
+
+.item-image-container{
+
+}
+
+.item-image{
+    max-height: 100px;
+}
+
+.item-text-container{
+
+}
+
+.item-title{
+    font-size: 120%;
+}
+
+.item-subtext{
+
+}
