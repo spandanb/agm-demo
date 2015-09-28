@@ -30,7 +30,6 @@ function myGraph(el) {
            //The id is the type + count
            var counts =  _.countBy(nodes, function(node){ return node.type});
            id = type + (counts[type] ? counts[type] : '0');
-           console.log(type);
         }
         nodes.push({"id": id, "type": type});
         update();
@@ -59,6 +58,15 @@ function myGraph(el) {
             update();
         }
     }
+
+    this.addLinkFromNode = function(source, target){
+        links.push({"source": source, "target": target});
+        update();
+    
+    }
+
+    this.linkState = {source: null, target: null, srcWrite:true};
+
 
     var findNode = function (id) {
         for (var i=0; i < nodes.length; i++) {
@@ -101,15 +109,25 @@ function myGraph(el) {
 
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
-            .call(force.drag);
+            .call(force.drag)
+            .on('click', function(n){
+                    if(graph.linkState.srcWrite){
+                        graph.linkState.source = n;
+                        graph.linkState.srcWrite = false;
+                    }else{
+                        graph.linkState.target = n;
+                        graph.linkState.srcWrite = true;
+                        graph.addLinkFromNode(graph.linkState.source, graph.linkState.target);
+                    }
+                });
 
         nodeEnter.append("image")
             .attr("class", "circle")
             .attr("xlink:href", function(d){ return "icons/" + d.type + ".png"})
             .attr("x", "-8px")
             .attr("y", "-8px")
-            .attr("width", "32px")
-            .attr("height", "32px");
+            .attr("width", "64px")
+            .attr("height", "64px");
 
         nodeEnter.append("text")
             .attr("class", "nodetext")
