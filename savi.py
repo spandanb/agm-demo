@@ -97,10 +97,9 @@ class AuthAndLoad(object):
         
         resp = requests.post(self.get_url("tokens"), data=json.dumps(data), 
             headers=headers )
-        
-        if resp.status_code != 200:
+        if resp.status_code > 204:
+            self.resp = resp
             raise ValueError("Server returned non-200 status")
-            return False
         
         self.access = resp.json()['access']
         self.token = self.get_token(self.access)
@@ -114,6 +113,8 @@ class AuthAndLoad(object):
         if not tenant_name:
             tenant_name = self.tenants[0]
 
+        self.default_tenant = tenant_name
+        
         data = {
             "auth":{
                 "token": {
@@ -125,9 +126,9 @@ class AuthAndLoad(object):
         headers = {"Content-Type": "application/json"}
         resp = requests.post(self.get_url("tokens"), data=json.dumps(data), 
             headers=headers )
-        if resp.status_code != 200:
+        if resp.status_code > 204:
+            self.resp = resp
             raise ValueError("Server returned non-200 status")
-            return False
         
         self.access = resp.json()['access']
         self.tenant_token = self.get_token(self.access)
@@ -149,7 +150,8 @@ class AuthAndLoad(object):
         headers = {"X-Auth-Token" : token}
         resp = requests.get(api_url, headers=headers)
 
-        if resp.status_code != 200:
+        if resp.status_code > 204:
+            self.resp = resp
             raise ValueError("Server returned non-200 status")
 
         servers = resp.json()['servers']
