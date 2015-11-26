@@ -6,34 +6,25 @@ class AuthAndLoad(object):
     """
     Authenticates user and loads
     servers' info
+    Typical usage:
+    auth()
+    get_tenants()
+    tenant_auth()
+    get_servers()
     """
     def __init__(self):
         pass
 
 
-    def get_url(self, suffix):
+    def _get_url(self, suffix):
         """
         Return URL for a specific call
         """
         KEYSTONE_URL = "http://iam.savitestbed.ca:5000/v2.0/"
         return KEYSTONE_URL + suffix
 
-    def get_tenants(self):
-        """
-        gets the available tenants for this token
-        """
-        headers = {
-                "X-Auth-Token": self.token
-            }    
-        resp = requests.get(self.get_url("tenants"),
-            headers=headers)
-        tenant_dicts = resp.json()['tenants']
-        #Extract the names
-        tenants = [tenant_dict['name'] for tenant_dict in tenant_dicts ]
-        self.tenants = tenants
-        return tenants 
 
-    def get_server_details(self, servers):
+    def _get_server_details(self, servers):
         """
         Take a list of servers and extract 
         name and addr
@@ -59,7 +50,7 @@ class AuthAndLoad(object):
         return map(extract_server_details, servers)
 
 
-    def get_nova_url(self, service_catalog):
+    def _get_nova_url(self, service_catalog):
         novas = filter(lambda service: service['name'] == 'nova', 
             service_catalog) 
 
@@ -69,7 +60,7 @@ class AuthAndLoad(object):
         public_url = nova[0]['publicURL']
         return public_url
 
-    def get_token(self, access):
+    def _get_token(self, access):
         return access['token']['id']
 
     def auth(self, username, password, region_name):
@@ -95,14 +86,14 @@ class AuthAndLoad(object):
 
         headers = {"Content-Type": "application/json"}
         
-        resp = requests.post(self.get_url("tokens"), data=json.dumps(data), 
+        resp = requests.post(self._get_url("tokens"), data=json.dumps(data), 
             headers=headers )
         if resp.status_code > 204:
             self.resp = resp
             raise ValueError("Server returned non-200 status")
         
         self.access = resp.json()['access']
-        self.token = self.get_token(self.access)
+        self.token = self._get_token(self.access)
         #print "In auth; token is {}".format(self.token)
         return True
 
@@ -124,18 +115,35 @@ class AuthAndLoad(object):
             }
         }
         headers = {"Content-Type": "application/json"}
-        resp = requests.post(self.get_url("tokens"), data=json.dumps(data), 
+        resp = requests.post(self._get_url("tokens"), data=json.dumps(data), 
             headers=headers )
         if resp.status_code > 204:
             self.resp = resp
             raise ValueError("Server returned non-200 status")
         
         self.access = resp.json()['access']
-        self.tenant_token = self.get_token(self.access)
+        self.tenant_token = self._get_token(self.access)
         #print "In tenant_auth; token is {}".format(self.tenant_token)
         return True
 
-        
+    def get_tenants(self):
+        """
+        gets the available tenants for this token
+        """
+        headers = {
+                "X-Auth-Token": self.token
+            }    
+        resp = requests.get(self._get_url("tenants"),
+            headers=headers)
+        tenant_dicts = resp.json()['tenants']
+        #Extract the names
+        tenants = [tenant_dict['name'] for tenant_dict in tenant_dicts ]
+        self.tenants = tenants
+        return tenants 
+
+    def change_region(self, region_name):
+        self.region_name = region_name
+
     def get_servers(self, token=None, nova_url=None):
         """
         Gets the information about the servers
@@ -143,7 +151,7 @@ class AuthAndLoad(object):
         if not token:
             token = self.tenant_token
         if not nova_url: 
-            nova_url = self.get_nova_url(self.access['serviceCatalog'])
+            nova_url = self._get_nova_url(self.access['serviceCatalog'])
         
         #print "token is {}; url is {}".format(token, nova_url)
         api_url = nova_url + "/servers/detail" 
@@ -155,7 +163,7 @@ class AuthAndLoad(object):
             raise ValueError("Server returned non-200 status")
 
         servers = resp.json()['servers']
-        self.servers = self.get_server_details(servers)
+        self.servers = self._get_server_details(servers)
         return self.servers
 
 

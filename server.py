@@ -38,7 +38,41 @@ def change_param():
     """
     Either region_name or tenant_name changed
     """
-    pass
+    response = {}
+    if "tenant_name" in request.values:
+        try:
+            auth_load.tenant_auth(tenant_name=request.values['tenant_name'])
+            auth_load.get_servers()
+            response = {
+                'status': True,
+                'tenants': auth_load.tenants,
+                'servers': auth_load.servers,
+                'default_tenant': auth_load.default_tenant
+            }
+        except ValueError as err:
+            response = {
+                'status': False,
+                'status_code': auth_load.resp.status_code,
+                'status_text': auth_load.resp.text
+            }
+    elif "region_name" in request.values:
+        try:
+            auth_load.change_region(request.values['region_name'])
+            auth_load.get_servers()
+            response = {
+                'status': True,
+                'tenants': auth_load.tenants,
+                'servers': auth_load.servers,
+                'default_tenant': auth_load.default_tenant
+            }
+        except ValueError as err:
+            response = {
+                'status': False,
+                'status_code': auth_load.resp.status_code,
+                'status_text': auth_load.resp.text
+            }
+
+    return jsonify(response)
 
 @app.route("/chain", methods=['POST'])
 def chain():
@@ -47,8 +81,6 @@ def chain():
     call the chaining script
     """
     pass
-
-
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)
