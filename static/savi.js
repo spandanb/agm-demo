@@ -1,7 +1,16 @@
 //Need these to be global; otherwise won't work
+//create graph
+var graph_div = $("#graph");
+    var width = graph_div.width()
+    graph_div.append(
+        '<svg height="500" id="svg" width="' + graph_div.width() + '"></svg>'
+    )
+
 var graph = new myGraph("#graph");
 var SERVER_ADDR = "http://localhost:5000/";
 $(function(){
+    
+    
     
     var username = $("#username");
     var password = $("#password");
@@ -41,7 +50,12 @@ $(function(){
                 if(resp.status){
                     tenant_select(false, resp.tenants, resp.default_tenant);
                     _.map(resp.servers, function(server){
-                        graph.addNode(server.name + "(" + server.addr + ")" );
+                        var details = {
+                                name: server.name,
+                                id: server.id,
+                                addr: server.addr                                
+                            }           
+                        graph.addNode(server.name + "(" + server.addr + ")", details);
                      })
                 }else{
                     //Not authenticated
@@ -100,7 +114,8 @@ $(function(){
     }
 
     $("#login").click(function(){
-            //TODO: Do client side checking here
+            
+            //Do client side checking here
             if(!username.val()) create_alert("Username");            
             else if(!password.val()) create_alert("Password");            
             else if(!region_select.val()) create_alert("Region Name");            
@@ -112,7 +127,42 @@ $(function(){
                 }
     
                 authenticate(login_params);
-            }
+            }            
         }
     )
+    
+    //gateway checkbox
+    $("#gateway").change(function(){
+        var checked = $("#gateway").prop("checked")
+        if (checked) {
+            //Add anchor node
+            graph.addAnchorNode("Gateway");
+        }else{
+            //remove anchor node
+            graph.removeNode("Gateway");
+        }
+    })
+    
+    $("#chain").click(function(){
+        //Get the IP addrs
+        var connections = [];        
+        _.map(graph.getConnections(), function(link){
+            connections.push([link.source.details.addr,
+                              link.target.details.addr
+            ])
+        })
+        
+        console.log(connections);
+        $.ajax({
+            url: SERVER_ADDR + "chain", 
+            data: {"connections": connections},
+            method: "POST",
+            success: function(resp){
+                console.log("received response: ", resp);
+                
+            }
+        })
+    })
+    
+    
 })

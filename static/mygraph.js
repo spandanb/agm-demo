@@ -5,8 +5,9 @@ function myGraph(el) {
     */
 
     // Add and remove elements on the graph object
-    this.addNode = function (id, type) {
-        //Set defaults if values not specified
+    //NOTE: This is deprecated
+    this.addNode2 = function (id, type) {
+
         type = type || "server"; 
         //Need a suitable id
         if(!id){
@@ -19,6 +20,17 @@ function myGraph(el) {
         update();
     }
 
+    this.addNode = function(id, params){
+        //params is a dict of additional params
+        //type -> type of param [server | database | vnf] 
+        //Set defaults if values not specified
+        if (!id) {
+            id = "Server" + nodes.length
+        }
+        nodes.push({id: id, details: params})
+        update();        
+    }
+    
     this.removeNode = function (id) {
         var i = 0;
         var n = findNode(id);
@@ -34,6 +46,7 @@ function myGraph(el) {
     }
 
     this.removeAll = function(){
+        //Clears all nodes and links
         links.splice(0, links.length);
         nodes.splice(0, nodes.length);
         update();
@@ -50,13 +63,39 @@ function myGraph(el) {
     }
 
     this.addLinkFromNode = function(source, target){
+        //source -> source node obj
+        //target -> destination node obj
         links.push({"source": source, "target": target});
         update();
     
     }
 
+    this.addAnchorNode = function (anchorId){
+        //A special node like the gateway
+        //that is fixed and connected to everyone else
+        nodes.push({"id": anchorId, "fixed":true, "r": 32});
+            
+        //Add links to all nodes 
+        _.map(nodes, function(node){
+            var anchorNode = findNode(anchorId);
+            if(node.id != anchorId){
+               links.push({"source":anchorNode, "target":node,
+                          "lineStyle":"link-dashed"}); //This makes it wonky
+            }    
+        })
+        //Add links 
+        update();
+    }
+    
+    this.getConnections = function(){
+        //returns a list of connections
+        return _.map(links, function(link){
+                return {source: link.source, target: link.target}
+            })        
+    }
+    
+    
     this.linkState = {source: null, target: null, srcWrite:true};
-
 
     var findNode = function (id) {
         for (var i=0; i < nodes.length; i++) {
@@ -76,30 +115,38 @@ function myGraph(el) {
     var vis = this.vis = d3.select("svg");
 
     var force = d3.layout.force()
-        .gravity(.05)
+        //.gravity(.05)
         .distance(100)
-        .charge(-100)
+        .charge(-120)
+        //.linkDistance(200)
         .size(["500", "500"]); //The width, height of svg canvas
 
-    var nodes = force.nodes(),
-        links = force.links();
-
+    //Need this so links appear under nodes    
+    vis.append("g").attr("id", "links")
+    vis.append("g").attr("id", "nodes")    
+        
+    var links = force.links();    
+    var nodes = force.nodes();
+        
+        
+    //This update works with the server images    
     var update = function () {
 
-        var link = vis.selectAll("line.link")
-            .data(links, function(d) { return d.source.id + "-" + d.target.id; });
+        var link = vis.select("#links").selectAll(".link")
+            .data(links, function(d) { return d.source.id + "-" + d.target.id; })
+            
 
-        link.enter().insert("line")
-            .attr("class", "link");
+        link.enter().append("line")
+            .attr("class", function(d){ return "link" });
 
         link.exit().remove();
 
         var node = vis.selectAll("g.node")
-            .data(nodes, function(d) { return d.id;});
+            .data(nodes, function(d) { return d.id;})
+            .classed('gnode', true)
 
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
-            .call(force.drag)
             .on('click', function(n){
                     if(graph.linkState.srcWrite){
                         graph.linkState.source = n;
@@ -109,16 +156,27 @@ function myGraph(el) {
                         graph.linkState.srcWrite = true;
                         graph.addLinkFromNode(graph.linkState.source, graph.linkState.target);
                     }
-                });
+                })
+            .call(force.drag)
+            
 
+        //Show server icons
+        /*
         nodeEnter.append("image")
             .attr("class", "circle")
-            .attr("xlink:href", function(d){ return "icons/" + d.type + ".png"})
+            .attr("xlink:href", function(d){ return "icons/" + (d.type || "server") + ".png"})
             .attr("x", "-8px")
             .attr("y", "-8px")
             .attr("width", "64px")
-            .attr("height", "64px");
-
+            .attr("height", "64px");        
+        */
+        
+        //Show circles
+        nodeEnter.append("circle")
+            .attr("class", "node-inner")
+            .attr("r", function(d){return d.r || 8})
+            .style("fill", function(d){return !!d.fixed? "#ff6666":"#cccccc"})
+        
         nodeEnter.append("text")
             .attr("class", "nodetext")
             .attr("dx", 12)
@@ -139,6 +197,7 @@ function myGraph(el) {
         // Restart the force layout.
         force.start();
     }
+    
 
     // Make it all go
     update();

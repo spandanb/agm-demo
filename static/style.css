@@ -1,3 +1,48 @@
+/*
+* Graph Styles 
+*/
+
+.link { 
+    stroke: #3F602B;
+    stroke-width: 2px;
+}
+
+.link-dashed{ 
+    stroke: #3F602B;
+    stroke-width: 2px;
+    stroke-dasharray: 10,10;
+}
+
+.node-inner{
+    stroke: #000;
+    stroke-width: 2px;
+    fill: #ccc;
+}
+
+.nodetext { 
+    pointer-events: none; 
+    font: 10px sans-serif; 
+}
+
+body { 
+    width:100%; 
+    height:100%; 
+    margin:none; 
+    padding:none; 
+}
+
+#graph { 
+    /*width:500px;
+    height:500px; */
+    border:1px solid #989898; 
+    border-radius:12px; 
+    margin:auto; 
+}
+
+/*
+* My styles
+*/
+
 .shadow-container{
     border: 1px solid #989898;
     box-sizing: border-box;

@@ -80,7 +80,10 @@ def chain():
     Chain the servers
     call the chaining script
     """
-    pass
+    print "In chain func"
+    print request.form
+
+    return jsonify({"status": True})
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

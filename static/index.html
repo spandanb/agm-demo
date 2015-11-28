@@ -5,13 +5,8 @@
     <link href=
     "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
     rel="stylesheet" type="text/css">
-    <style type="text/css">
-        .link { stroke: #ccc; }
-        .nodetext { pointer-events: none; font: 10px sans-serif; }
-        body { width:100%; height:100%; margin:none; padding:none; }
-        #graph { width:500px;height:500px; border:1px solid #989898;border-radius:12px; margin:auto; }
-    </style>
-    <title></title>
+    
+    <title>Drag and Drop Service Chaining</title>
 </head>
 <body>
     <!-- Nav bar -->
@@ -30,11 +25,15 @@
                     <div class="form-group">
                         <input class="form-control" id="username" placeholder=
                         "Username" type="text">
-                    </div><!-- Password -->
+                    </div>
+                    
+                    <!-- Password -->
                     <div class="form-group">
                         <input class="form-control" id="password" placeholder=
                         "Password" type="password">
-                    </div><!-- Region Name -->
+                    </div>
+                    
+                    <!-- Region Name -->
                     <select class="form-control" id="region-select">
                         <option value="">
                             Region
@@ -63,8 +62,13 @@
                         <option value="EDGE-CT-1">
                             EDGE-CT-1
                         </option>
-                    </select> <button class="btn btn-default btn-success" id=
-                    "login">Login</button> <!-- Tenant Name -->
+                    </select>
+                    
+                    <!-- Login Button -->
+                    <button class="btn btn-default btn-success" id=
+                        "login">Login</button>
+                    
+                    <!-- Tenant Name -->
                      <select class="form-control" disabled="true" id=
                     "tenant-select">
                         <option value="">
@@ -75,126 +79,52 @@
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
+
     <div class="container">
         <div class="row">
-            <!-- Left Column -->
-            <div class="col-md-4">
-                <div class="row">
-                    <!-- Item 1 -->
-                    <div class="shadow-container row">
-                        <div class="item-image-container col-md-4"><img alt=""
-                        class="item-image" draggable="true" id="server"
-                        ondragstart="drag(event)" src="icons/server.png"></div>
-                        <div class="item-text-container col-md-8">
-                            <div class="item-title">
-                                Web Server
-                            </div>
-                            <div class="item-subtext">
-                                An Apache HTTP web server.
-                            </div>
-                        </div>
-                    </div><!-- Item 2 -->
-                    <div class="shadow-container row">
-                        <div class="item-image-container col-md-4"><img alt=""
-                        class="item-image" draggable="true" id="database"
-                        ondragstart="drag(event)" src=
-                        "icons/database.png"></div>
-                        <div class="item-text-container col-md-8">
-                            <div class="item-title">
-                                Database
-                            </div>
-                            <div class="item-subtext">
-                                A PostgreSQL database.
-                            </div>
-                        </div>
-                    </div><!-- Item 3 -->
-                    <div class="shadow-container row">
-                        <div class="item-image-container col-md-4"><img alt=""
-                        class="item-image" draggable="true" id="vnf"
-                        ondragstart="drag(event)" src="icons/vnf.png"></div>
-                        <div class="item-text-container col-md-8">
-                            <div class="item-title">
-                                VNF: DPI
-                            </div>
-                            <div class="item-subtext">
-                                A snort based DPI
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="shadow-container">
-                        <div class="panel-body">
-                            <fieldset>
-                                <div class="form-group">
-                                    <input class="form-control" id=
-                                    "add-node-name" name="name" placeholder=
-                                    "Name" type="text">
-                                </div><button class=
-                                "btn btn-lg btn-success btn-block" id=
-                                "add-node">Add Node</button>
-                            </fieldset>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="shadow-container">
-                        <div class="panel-body">
-                            <fieldset>
-                                <div class="form-group">
-                                    <input class="form-control" id=
-                                    "link-node-name1" name="name" placeholder=
-                                    "Name of First Node" type="text">
-                                </div>
-                                <div class="form-group">
-                                    <input class="form-control" id=
-                                    "link-node-name2" name="name" placeholder=
-                                    "Name of Second Node" type="text">
-                                </div><button class=
-                                "btn btn-lg btn-info btn-block" id=
-                                "link-node">Link Nodes</button>
-                            </fieldset>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="shadow-container">
-                        <div class="panel-body">
-                            <fieldset>
-                                <div class="form-group">
-                                    <input class="form-control" id=
-                                    "remove-node-name" name="name" placeholder=
-                                    "Name" type="text">
-                                </div><button class=
-                                "btn btn-lg btn-danger btn-block" id=
-                                "remove-node">Remove Node</button>
-                            </fieldset>
-                        </div>
-                    </div>
-                </div>
-            </div><!-- Right Column -->
-            <div class="col-md-8">
+            <div class="col-md-2 sidebar">
+                <ul class="nav nav-sidebar">
+                    <li>
+                        <label class="checkbox-inline">
+                            <input id="gateway" type="checkbox" value=
+                                   "gateway">Gateway View
+                        </label>
+                        
+                        <button class="btn btn-default btn-success" id=
+                        "chain">Apply Chaining</button>
+                        
+                        
+                    </li>
+                </ul>
+            </div><!--.col-md-2-->
+            
+            <div class="col-md-10">
                 <div id="graph">
-                    <svg height="500" id="svg" width="500"></svg>
+                    <!--svg height="500" id="svg" width="500"></svg-->
                 </div>
             </div>
         </div>
-    </div><!-- jquery.min.js -->
+    </div>
+
+    <!-- jquery.min.js -->
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type=
     "text/javascript">
-    </script> <!-- underscore-min.js -->
-     
+    </script>
+
+    <!-- underscore-min.js -->
     <script src=
     "https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"
     type="text/javascript">
-    </script> <!--d3.v2.min.js-->
-     
+    </script>
+    
+    <!--d3.v2.min.js-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"
     type="text/javascript">
     </script> 
     <script src=
     "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" type=
     "text/javascript"></script> 
+    
     <script src="mygraph.js" type="text/javascript"></script>
     <!-- Don't need myscr; it handles UI for adding new nodes -->
     <!--script type="text/javascript" src="myscr.js"></script-->
