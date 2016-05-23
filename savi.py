@@ -1,6 +1,6 @@
 import requests
 import json 
-from  pdb import set_trace as pst
+from  pdb import set_trace 
 
 class AuthAndLoad(object):
     """
@@ -46,8 +46,12 @@ class AuthAndLoad(object):
                 "id" : server["id"],
                 "name" : server["name"]
             }
-            
-        return map(extract_server_details, servers)
+
+        #TODO: allow them to specify showing all servers?
+        #return map(extract_server_details, servers)
+        return map(extract_server_details,
+                filter(lambda s: s['user_id'] == self.user_id, servers))
+              
 
 
     def _get_nova_url(self, service_catalog):
@@ -94,7 +98,7 @@ class AuthAndLoad(object):
         
         self.access = resp.json()['access']
         self.token = self._get_token(self.access)
-        #print "In auth; token is {}".format(self.token)
+        self.user_id = self.access['user']['id']
         return True
 
     def tenant_auth(self, tenant_name=None):

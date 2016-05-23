@@ -1,8 +1,11 @@
 from flask import Flask, request, jsonify
 from savi import AuthAndLoad
 import pdb
-app = Flask(__name__, static_url_path='')
+import json
+from aws import AwsClient
+from chaining import create_chain
 
+app = Flask(__name__, static_url_path='')
 auth_load = AuthAndLoad()
 
 @app.route("/")
@@ -31,7 +34,27 @@ def auth():
             'status_code': auth_load.resp.status_code,
             'status_text': auth_load.resp.text
         }
-    return jsonify(response)
+    finally:
+        return jsonify(response)
+
+
+@app.route("/auth_aws", methods=['POST'])
+def auth_aws():
+    try:
+        aws_client = AwsClient(aws_access_key_id=request.values['key_id'], 
+                               aws_secret_access_key=request.values['secret_key'],
+                               region=request.values["region_name"])
+        response = {
+            'status': True,
+            'servers': aws_client.list_running_servers()
+        }
+    except ValueError as err:
+        print err
+        response = {
+            'status': False,
+        }
+    finally:
+        return jsonify(response)
 
 @app.route("/change_param", methods=['POST'])
 def change_param():
@@ -80,8 +103,14 @@ def chain():
     Chain the servers
     call the chaining script
     """
-    print "In chain func"
-    print request.form
+    chain_data = json.loads(request.values["chain_data"])
+    ep1 = chain_data["chain"]["ep1"]["addr"]
+    ep2 = chain_data["chain"]["ep2"]["addr"]
+    middlebox = chain_data["chain"]["middlebox"]["addr"]
+    master_ip = chain_data["master_ip"]
+
+    #Thomas' script here
+    create_chain(ep1=ep1, ep2=ep2, middlebox=middlebox, janus_ip=master_ip, flowname=auth_load.user_id + "-chain")
 
     return jsonify({"status": True})
 

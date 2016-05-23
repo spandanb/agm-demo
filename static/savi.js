@@ -1,3 +1,6 @@
+//CONSTANTS
+var SERVER_ADDR = "http://localhost:5000/";
+
 //Need these to be global; otherwise won't work
 //create graph
 var graph_div = $("#graph");
@@ -6,46 +9,54 @@ var graph_div = $("#graph");
         '<svg height="500" id="svg" width="' + graph_div.width() + '"></svg>'
     )
 
+//The graph object
 var graph = new myGraph("#graph");
-var SERVER_ADDR = "http://localhost:5000/";
+var is_logged_in = false; //SAVI 
+
 $(function(){
     
-    
-    
+    /******************** Fields ***********************/
+    //Savi fields
     var username = $("#username");
     var password = $("#password");
-    var region_select = $("#region-select");
-    var tenant_select = $("#tenant-select");
+    var regions = $("#region-select");
+    var tenants = $("#tenant-select");
+    
+    //Aws fields
+    var key_id = $("#access-key-id");
+    var sec_key = $("#secret-access-key");
+    var regions_aws = $("#region-select-aws");
 
-    var tenant_select = function(disable, tenants, current_tenant){
-        //enable tenant select and add options 
-        //to tenant select 
+    /******************** Helper Functions ***********************/
+
+    var tenant_select = function(disable, tenant_list, current_tenant){
+        /*enables/disables tenant select input and add tenant options*/
         //Arguments:
         //enable -> bool
-        //tenants -> list of available tenants
+        //tenant_list -> list of available tenants
         //current_tenant -> str 
-        var tenant_select = $("#tenant-select");
 
-        tenant_select.attr('disabled', disable);
+        tenants.attr('disabled', disable);
         if(!disable){
-            _.map(tenants, function(tenant){
-                tenant_select.append(
+            _.map(tenant_list, function(tenant){
+                tenants.append(
                     //Append tenant options to select
                     '<option value="'+tenant+'">'+tenant+'</option>');
             })
             //Set the default 
-            tenant_select.val(current_tenant);
+            tenants.val(current_tenant);
         }
     }
 
-    //authenticates the user
-    var authenticate = function(login_params){
-     
+    var authenticate = function(login_params, success_callback){
+        /*authenticates the user*/
         $.ajax({
             url: SERVER_ADDR + "auth", 
             data: login_params, 
             method: "POST",
             success: function(resp){
+                is_logged_in = true;
+                if(success_callback) success_callback();
                 console.log(resp);
                 if(resp.status){
                     tenant_select(false, resp.tenants, resp.default_tenant);
@@ -53,7 +64,73 @@ $(function(){
                         var details = {
                                 name: server.name,
                                 id: server.id,
-                                addr: server.addr                                
+                                addr: server.addr,
+                                type: 'savi'
+                            }           
+                        console.log(details)    
+                        graph.addNode(server.name + "(" + server.addr + ")", details);
+                     })
+                }else{
+                    //Not authenticated
+                    $('#tenant-name').attr('disabled', true);
+                }
+            }
+        })
+    }
+
+    var authenticate_aws = function(login_params, success_callback){
+        /*authenticates the user against AWS*/
+        $.ajax({
+            url: SERVER_ADDR + "auth_aws", 
+            data: login_params, 
+            method: "POST",
+            success: function(resp){
+                if(success_callback) success_callback();
+                console.log(resp);
+                if(resp.status){
+                       for(var i=0, coll =resp.servers[i]; i<resp.servers.length; i++)
+                           for(var j=0; j < coll.Instances.length; j++){
+                            var inst = coll.Instances[j];
+                            var details = {
+                                    name: inst.InstanceId,
+                                    id: inst.InstanceId,
+                                    addr: inst.PublicDnsName,
+                                    type: 'aws'
+                                }
+                            graph.addNode(inst.InstanceId + "(" + inst.PublicDnsName + ")", details);
+                        }
+                }else{
+                    //Not authenticated
+                    $('#tenant-name').attr('disabled', true);
+                }
+            }
+        })
+    }
+    
+    var change_param = function(dict, success_callback){
+        /*Change either the tenant or region*/
+        param = Object.keys(dict)[0]
+        value = dict[param]
+        console.log("Changing " + param + " to " + value);
+
+        $.ajax({
+            url: SERVER_ADDR + "change_param", 
+            data: dict,
+            method: "POST",
+            success: function(resp){
+                if(success_callback) success_callback();
+                console.log(resp);
+                if(resp.status){
+                    //Delete existing servers
+                    //graph.removeAll();
+                    graph.removeAllSavi();
+
+                    _.map(resp.servers, function(server){
+                        var details = {
+                                name: server.name,
+                                id: server.id,
+                                addr: server.addr,
+                                type: 'savi'
                             }           
                         graph.addNode(server.name + "(" + server.addr + ")", details);
                      })
@@ -64,47 +141,9 @@ $(function(){
             }
         })
     }
-    
-    //Change either the tenant or region
-    var change_param = function(dict){
-        param = Object.keys(dict)[0]
-        value = dict[param]
-        console.log("Changing " + param + " to " + value);
-
-        $.ajax({
-            url: SERVER_ADDR + "change_param", 
-            data: dict,
-            method: "POST",
-            success: function(resp){
-                console.log(resp);
-                if(resp.status){
-                    //Delete existing servers
-                    graph.removeAll();
-                    //tenant_select(false, resp.tenants, resp.default_tenant);
-                    _.map(resp.servers, function(server){
-                        graph.addNode(server.name + "(" + server.addr + ")" );
-                     })
-                }else{
-                    //Not authenticated
-                    $('#tenant-name').attr('disabled', true);
-                }
-            }
-        })
-
-    }
-
-    //Region Changed
-    region_select.change(function(){
-        change_param({"region_name":region_select.val()});
-    });
-    
-    //Tenant changed
-    $("#tenant-select").change(function(){
-        var tenant_val = $("#tenant-select").val();
-        change_param({"tenant_name":tenant_val});
-    });
 
     var create_alert = function(field){
+        /*Creates an alert*/
         var alert_html =
             '<div class="alert alert-danger alert-dismissible" role="alert">'+
                 '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
@@ -113,34 +152,99 @@ $(function(){
         $("nav").first().after(alert_html);
     }
 
-    $("#login").click(function(){
-            
-            //Do client side checking here
-            if(!username.val()) create_alert("Username");            
-            else if(!password.val()) create_alert("Password");            
-            else if(!region_select.val()) create_alert("Region Name");            
-            else{
-                var login_params = {
-                    "username": username.val(),
-                    "password": password.val(),
-                    "region_name":region_select.val()
-                }
+    /******************** SAVI Events ***********************/
+    regions.change(function(){
+        /*Region Changed*/
+        if(!is_logged_in) return;
+
+        $("body").append('<div id="overlay-loader" class="loading-overlay"></div>')
+        success_callback = function(){
+            //remove overlay 
+            $("#overlay-loader").remove();
+        }
+
+        change_param({"region_name":regions.val()}, success_callback);
+    });
     
-                authenticate(login_params);
-            }            
+    tenants.change(function(){
+        /*Tenant changed*/
+        if(!is_logged_in) return;
+        $("body").append('<div id="overlay-loader" class="loading-overlay"></div>')
+        
+        success_callback = function(){
+            $("#overlay-loader").remove();
+        }
+        var tenant_val = $("#tenant-select").val();
+        change_param({"tenant_name":tenant_val}, success_callback);
+    });
+
+    //Savi login
+    $("#login").click(function(){
+            //client side checking
+            if(!username.val()){ create_alert("Username"); return; };            
+            if(!password.val()){create_alert("Password"); return; };            
+            if(!regions.val()){create_alert("Region"); return;}
+
+            $("body").append('<div id="overlay-loader" class="loading-overlay"></div>')
+            
+            success_callback = function(){
+                $("#overlay-loader").remove();
+            }
+            authenticate({ username : username.val(), 
+                           password : password.val(), 
+                           region_name: regions.val()}, success_callback);
         }
     )
-    
-    //gateway checkbox
-    $("#gateway").change(function(){
-        var checked = $("#gateway").prop("checked")
-        if (checked) {
-            //Add anchor node
-            graph.addAnchorNode("Gateway");
-        }else{
-            //remove anchor node
-            graph.removeNode("Gateway");
+
+    /******************** AWS Events ***********************/
+    //AWS login
+    $("#login-aws").click(function(){
+            //client side checking
+            if(!key_id.val()){ create_alert("Access Key ID"); return; }
+            if(!sec_key.val()){create_alert("Secret Access Key"); return; }         
+            if(!regions_aws.val()){create_alert("Region"); return; }
+
+            $("body").append('<div id="overlay-loader" class="loading-overlay"></div>')
+            
+            success_callback = function(){
+                $("#overlay-loader").remove();
+            }
+            authenticate_aws({ key_id: key_id.val() , 
+                               secret_key: sec_key.val(), 
+                               region_name: regions_aws.val()}, success_callback);
         }
+    )
+
+    /******************** Chaining Events ***********************/
+    //TODO: remove one of the following 2 functions
+    $("#apply-chaining").click(function(){
+        console.log("Apply chaining clicked")
+        var master_ip = $("#master_ip").val()
+        //console.log(graph);
+        //console.log(graph.getGraph());
+        console.log(graph.getChain());
+        console.log(master_ip);
+
+        req_data = {"chain_data": JSON.stringify({
+                'master_ip': master_ip,
+                'chain': graph.getChain()
+            })}
+
+        $.ajax({
+            url: SERVER_ADDR + "chain", 
+            data: req_data,
+            method: "POST",
+            success: function(resp){
+                console.log(resp);
+                if(resp.status){
+                
+                }else{
+                    //Not authenticated
+                    $('#tenant-name').attr('disabled', true);
+                }
+            }
+        })
+
     })
     
     $("#chain").click(function(){

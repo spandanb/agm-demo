@@ -6,67 +6,69 @@
     "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
     rel="stylesheet" type="text/css">
     
-    <title>Drag and Drop Service Chaining</title>
+    <title>Vino Service Chainingi UI</title>
 </head>
 <body>
     <!-- Nav bar -->
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-brand">
-                SAVI
+                Vino
             </div>
             
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id=
             "bs-example-navbar-collapse-1">
                 <div class="navbar-form navbar-right" role="login">
-                
+                    <!-- AWS -->
+
+                    <!-- Access Key Id-->
+                    <div class="form-group">
+                        <input class="form-control" id="access-key-id" placeholder=
+                        "Access Key ID" type="text" size="15">
+                    </div>
+
+                    <!-- Access Key-->
+                    <div class="form-group">
+                        <input class="form-control" id="secret-access-key" placeholder=
+                        "Secret Access Key" type="password" size="20">
+                    </div>
+
+                    <!-- Region select -->
+                    <select class="form-control" id="region-select-aws">
+                        <option value="">Region</option>
+                        <option value="us-east-1">us-east-1</option>
+                    </select>
+
+                    <!-- Login Button -->
+                    <button class="btn btn-default btn-success" id=
+                        "login-aws">AWS Login</button>
+
+                    <!-- SAVI--> 
                     <!-- Username -->
                     <div class="form-group">
                         <input class="form-control" id="username" placeholder=
-                        "Username" type="text">
+                        "Username" type="text" size="15">
                     </div>
                     
                     <!-- Password -->
                     <div class="form-group">
                         <input class="form-control" id="password" placeholder=
-                        "Password" type="password">
+                        "Password" type="password" size="15">
                     </div>
                     
                     <!-- Region Name -->
                     <select class="form-control" id="region-select">
-                        <option value="">
-                            Region
-                        </option>
-                        <option value="CORE">
-                            CORE
-                        </option>
-                        <option value="EDGE-TR-1">
-                            EDGE-TR-1
-                        </option>
-                        <option value="EDGE-VC-1">
-                            EDGE-VC-1
-                        </option>
-                        <option value="EDGE-CG-1">
-                            EDGE-CG-1
-                        </option>
-                        <option value="EDGE-MG-1">
-                            EDGE-MG-1
-                        </option>
-                        <option value="EDGE-YK-1">
-                            EDGE-YK-1
-                        </option>
-                        <option value="EDGE-WT-1">
-                            EDGE-WT-1
-                        </option>
-                        <option value="EDGE-CT-1">
-                            EDGE-CT-1
-                        </option>
+                        <option value="">Region</option>
+                        <option value="CORE">CORE</option>
+                        <option value="EDGE-TR-1">EDGE-TR-1</option>
+                        <option value="EDGE-VC-1">EDGE-VC-1</option>
+                        <option value="EDGE-CG-1">EDGE-CG-1</option>
+                        <option value="EDGE-MG-1">EDGE-MG-1</option>
+                        <option value="EDGE-YK-1">EDGE-YK-1</option>
+                        <option value="EDGE-WT-1">EDGE-WT-1</option>
+                        <option value="EDGE-CT-1">EDGE-CT-1</option>
                     </select>
-                    
-                    <!-- Login Button -->
-                    <button class="btn btn-default btn-success" id=
-                        "login">Login</button>
                     
                     <!-- Tenant Name -->
                      <select class="form-control" disabled="true" id=
@@ -75,6 +77,11 @@
                             Tenant
                         </option>
                     </select>
+
+                    <!-- Login Button -->
+                    <button class="btn btn-default btn-success" id=
+                        "login">Savi Login</button>
+
                 </div>
             </div><!-- /.navbar-collapse -->
         </div><!-- /.container-fluid -->
@@ -85,13 +92,19 @@
             <div class="col-md-2 sidebar">
                 <ul class="nav nav-sidebar">
                     <li>
-                        <label class="checkbox-inline">
+                        <!-- The following toggles a big blog representing a gateway -->
+                        <!--label class="checkbox-inline">
                             <input id="gateway" type="checkbox" value=
                                    "gateway">Gateway View
-                        </label>
+                        </label-->
                         
+                        <div class="form-group">
+                            <input class="form-control" id="master_ip" placeholder=
+                            "Master IP" type="text">
+                        </div>
+
                         <button class="btn btn-default btn-success" id=
-                        "chain">Apply Chaining</button>
+                        "apply-chaining">Apply Chaining</button>
                         
                         
                     </li>

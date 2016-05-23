@@ -20,15 +20,19 @@ function myGraph(el) {
         update();
     }
 
-    this.addNode = function(id, params){
-        //params is a dict of additional params
+    this.addNode = function(id, details){
+        //details is a dict of additional node properties
         //type -> type of param [server | database | vnf] 
         //Set defaults if values not specified
+
+        console.log(id, details);
+
         if (!id) {
             id = "Server" + nodes.length
         }
-        nodes.push({id: id, details: params})
+        nodes.push({id: id, details: details})
         update();        
+
     }
     
     this.removeNode = function (id) {
@@ -50,6 +54,17 @@ function myGraph(el) {
         links.splice(0, links.length);
         nodes.splice(0, nodes.length);
         update();
+    }
+
+    this.removeAllSavi = function(){
+        /*Remove all Savi nodes*/
+        for(var i=0; i<nodes.length; ){
+            if(nodes[i].details.type == "savi")
+                nodes.splice(i,1);
+            else //inc only if head not removed 
+                i++;
+        }
+        update();    
     }
 
     this.addLink = function (sourceId, targetId) {
@@ -111,6 +126,52 @@ function myGraph(el) {
         };
     }
 
+    this.getGraph = function(){
+        /* returns a dict representation of the graph*/
+        return {'nodes': nodes, 'links' : links}
+    }
+
+    this.getChain = function(){
+        /*Inspects all links; if a node is connected to 
+        two other nodes, then this is a chain*/
+        
+        var get_id = function(node){return node.details.id}
+        var get_details = function(node){return node.details}
+
+        if(links.length == 2){
+           if(get_id(links[0].source) == get_id(links[1].source)){
+               chain = {
+                    'ep1': links[0].target,
+                    'ep2': links[1].target,
+                    'middlebox': links[0].source
+               }
+           }else if(get_id(links[0].source) == get_id(links[1].target)){
+               chain = {
+                    'ep1': links[0].target,
+                    'ep2': links[1].source,
+                    'middlebox': links[0].source
+               }
+           }else if(get_id(links[0].target) == get_id(links[1].source)){
+               chain = {
+                    'ep1': links[0].source,
+                    'ep2': links[1].target,
+                    'middlebox': links[0].target
+               }
+           
+           }else{
+            alert("Error: To create a chain, only connect 2 nodes to a middlebox")
+           }
+        }else{
+            alert("Error: To create a chain, only connect 3 nodes")
+        }
+
+        return {
+                    ep1: get_details(chain.ep1), 
+                    ep2: get_details(chain.ep2), 
+                    middlebox: get_details(chain.middlebox)
+               }
+    }
+
     // set up the D3 visualisation in the specified element
     var vis = this.vis = d3.select("svg");
 
@@ -135,9 +196,9 @@ function myGraph(el) {
         var link = vis.select("#links").selectAll(".link")
             .data(links, function(d) { return d.source.id + "-" + d.target.id; })
             
-
         link.enter().append("line")
-            .attr("class", function(d){ return "link" });
+            .attr("class", function(d){ return "link" })
+            .style("marker-end", "url(#suit)")
 
         link.exit().remove();
 
