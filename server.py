@@ -4,6 +4,7 @@ import pdb
 import json
 from aws import AwsClient
 from chaining import create_chain
+from ip_client import get_node_ip
 
 app = Flask(__name__, static_url_path='')
 auth_load = AuthAndLoad()
@@ -108,6 +109,14 @@ def chain():
     ep2 = chain_data["chain"]["ep2"]["addr"]
     middlebox = chain_data["chain"]["middlebox"]["addr"]
     master_ip = chain_data["master_ip"]
+
+    print "received inputs ep1={} ep2={} middlebox={} master_ip={}".format(ep1, ep2, middlebox, master_ip)
+
+    ep1 = get_node_ip(addr=ep1)
+    ep2 = get_node_ip(addr=ep2)
+    middlebox = get_node_ip(addr=middlebox)
+    
+    print "Overlay IPs are: ep1={} ep2={} middlebox={} master_ip={}".format(ep1, ep2, middlebox)
 
     #Thomas' script here
     create_chain(ep1=ep1, ep2=ep2, middlebox=middlebox, janus_ip=master_ip, flowname=auth_load.user_id + "-chain")

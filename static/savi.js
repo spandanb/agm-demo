@@ -73,6 +73,7 @@ $(function(){
                 }else{
                     //Not authenticated
                     $('#tenant-name').attr('disabled', true);
+                    create_alert("Username and/or Password");
                 }
             }
         })
@@ -102,6 +103,7 @@ $(function(){
                 }else{
                     //Not authenticated
                     $('#tenant-name').attr('disabled', true);
+                    create_alert("Access Key ID and/or Secret Access Key");
                 }
             }
         })

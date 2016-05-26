@@ -15,7 +15,6 @@ Make sure the security group allows SSH connectivity
 import boto3
 import pdb
 import os
-from keys import sync_aws_key 
 import paramiko
 from socket import error as socket_error
 
@@ -136,15 +135,6 @@ class AwsClient(object):
     def list_servers(self):
         resp = self.ec2_client.describe_instances()
         return resp['Reservations'] 
-#        ec2 = boto3.resource('ec2')
-#        instances = [inst for inst in ec2.instances.iterator()]
-#    
-#        instances = ec2.instances.filter(
-#            Filters=[{'Name': 'instance-state-name', 'Values': ['running']}])
-#    
-#        instances = ec2.instances.all()
-#        for instance in instances:
-#            print(instance.id, instance.instance_type)
 
     def list_running_servers(self, instance_ids=[]):
         """
@@ -193,9 +183,6 @@ if __name__ == "__main__":
     #region is set through env var, but explicitly set it again
     region = 'us-east-1'
     ac.set_region(region)
-
-    #First, let's handle the keys
-    #sync_local_key(DEFAULT_KEYNAME, ac)
 
     #Now create a server 
     #instance_ids = ac.create_server(ubuntu[region], "t2.nano", keyname=DEFAULT_KEYNAME)
