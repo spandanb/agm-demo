@@ -138,6 +138,7 @@ function myGraph(el) {
         var get_id = function(node){return node.details.id}
         var get_details = function(node){return node.details}
 
+        console.log(links)
         if(links.length == 2){
            if(get_id(links[0].source) == get_id(links[1].source)){
                chain = {
@@ -216,30 +217,22 @@ function myGraph(el) {
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
             .on('click', function(n){
-                    console.log(n);
                     if(graph.linkState.srcWrite){
                         graph.linkState.source = n;
                         graph.linkState.srcWrite = false;
                     }else{
-                        graph.linkState.target = n;
-                        graph.linkState.srcWrite = true;
-                        graph.addLinkFromNode(graph.linkState.source, graph.linkState.target);
+                        if(graph.linkState.source == n){
+                            /*src and target are the same; don't register*/
+                            graph.linkState.srcWrite = true;
+                        }else{
+                            graph.linkState.target = n;
+                            graph.linkState.srcWrite = true;
+                            graph.addLinkFromNode(graph.linkState.source, graph.linkState.target);
+                        }
                     }
                 })
             .call(force.drag)
             
-
-        //Show server icons
-        /*
-        nodeEnter.append("image")
-            .attr("class", "circle")
-            .attr("xlink:href", function(d){ return "icons/" + (d.type || "server") + ".png"})
-            .attr("x", "-8px")
-            .attr("y", "-8px")
-            .attr("width", "64px")
-            .attr("height", "64px");        
-        */
-        
         //Show circles
         nodeEnter.append("circle")
             .attr("class", "node-inner")
