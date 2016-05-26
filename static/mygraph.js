@@ -199,6 +199,13 @@ function myGraph(el) {
         link.enter().append("line")
             .attr("class", function(d){ return "link" })
             .style("marker-end", "url(#suit)")
+            .on('click', function(lnk){
+                    for(var i=0; i<links.length; i++){
+                        if(links[i] == lnk)
+                            links.splice(i, 1); 
+                    }
+                    update();
+                })
 
         link.exit().remove();
 
@@ -209,6 +216,7 @@ function myGraph(el) {
         var nodeEnter = node.enter().append("g")
             .attr("class", "node")
             .on('click', function(n){
+                    console.log(n);
                     if(graph.linkState.srcWrite){
                         graph.linkState.source = n;
                         graph.linkState.srcWrite = false;
