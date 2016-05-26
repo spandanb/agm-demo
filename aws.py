@@ -15,7 +15,7 @@ Make sure the security group allows SSH connectivity
 import boto3
 import pdb
 import os
-import paramiko
+#import paramiko
 from socket import error as socket_error
 
 #Image id's for same image vary by location

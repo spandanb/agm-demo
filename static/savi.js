@@ -1,5 +1,5 @@
 //CONSTANTS
-var SERVER_ADDR = "http://localhost:5000/";
+var SERVER_ADDR = "/";
 
 //Need these to be global; otherwise won't work
 //create graph
