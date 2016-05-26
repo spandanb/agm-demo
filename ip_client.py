@@ -9,8 +9,8 @@ def get_node_ip(addr="127.0.0.1", port=5000):
     soc.connect((addr, port))
     soc.send(' ')
     data = soc.recv(128)
-    print "received data '{}'".format(data)
     soc.close()
+    return data
 
 
 
