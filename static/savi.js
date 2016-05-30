@@ -88,17 +88,19 @@ $(function(){
                 if(success_callback) success_callback();
                 console.log(resp);
                 if(resp.status){
-                       for(var i=0, coll =resp.servers[i]; i<resp.servers.length; i++)
-                           for(var j=0; j < coll.Instances.length; j++){
-                            var inst = coll.Instances[j];
-                            var details = {
-                                    name: inst.InstanceId,
-                                    id: inst.InstanceId,
-                                    addr: inst.PublicIpAddress,
-                                    type: 'aws'
-                                }
+                      for(var i=0; i<resp.servers.length; i++){
+                            coll =resp.servers[i]
+                            for(var j=0; j < coll.Instances.length; j++){
+                                var inst = coll.Instances[j];
+                                var details = {
+                                        name: inst.InstanceId,
+                                        id: inst.InstanceId,
+                                        addr: inst.PublicIpAddress,
+                                        type: 'aws'
+                                    }
                             graph.addNode(inst.InstanceId + "(" + inst.PublicIpAddress + ")", details);
                         }
+                      }  
                 }else{
                     //Not authenticated
                     $('#tenant-name').attr('disabled', true);
