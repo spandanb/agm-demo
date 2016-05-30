@@ -64,11 +64,10 @@ $(function(){
                         var details = {
                                 name: server.name,
                                 id: server.id,
-                                addr: server.addr,
+                                addr: server.faddr || server.addr,
                                 type: 'savi'
                             }           
-                        console.log(details)    
-                        graph.addNode(server.name + "(" + server.addr + ")", details);
+                        graph.addNode(details.name + "(" + details.addr + ")", details);
                      })
                 }else{
                     //Not authenticated
@@ -95,10 +94,10 @@ $(function(){
                             var details = {
                                     name: inst.InstanceId,
                                     id: inst.InstanceId,
-                                    addr: inst.PublicDnsName,
+                                    addr: inst.PublicIpAddress,
                                     type: 'aws'
                                 }
-                            graph.addNode(inst.InstanceId + "(" + inst.PublicDnsName + ")", details);
+                            graph.addNode(inst.InstanceId + "(" + inst.PublicIpAddress + ")", details);
                         }
                 }else{
                     //Not authenticated
@@ -128,13 +127,14 @@ $(function(){
                     graph.removeAllSavi();
 
                     _.map(resp.servers, function(server){
+                        console.log(server);
                         var details = {
                                 name: server.name,
                                 id: server.id,
-                                addr: server.addr,
+                                addr: server.faddr || server.addr,
                                 type: 'savi'
                             }           
-                        graph.addNode(server.name + "(" + server.addr + ")", details);
+                        graph.addNode(details.name + "(" + details.addr + ")", details);
                      })
                 }else{
                     //Not authenticated
@@ -231,6 +231,9 @@ $(function(){
                 'master_ip': master_ip,
                 'chain': graph.getChain()
             })}
+
+        console.log(req_data)
+            return
 
         $.ajax({
             url: SERVER_ADDR + "chain", 

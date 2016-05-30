@@ -38,14 +38,29 @@ class AuthAndLoad(object):
             helper
             """
             #Get first network addresses
-            addr_name, addr_prop = server["addresses"].popitem()
+            addr_name, addr_list = server["addresses"].popitem()
             #a list- perhaps to account for multiple interfaces in a network
-            addr_prop = addr_prop[0] 
-            return {
-                "addr" : addr_prop["addr"],
-                "id" : server["id"],
-                "name" : server["name"]
-            }
+            if len(addr_list) == 1:
+                return {
+                    "addr" : addr_list[0]["addr"],
+                    "id" : server["id"],
+                    "name" : server["name"]
+                }
+            else:
+                #NOTE: It may be possible to have multiple ext addr; this solution would then fail
+                if addr_list[0]['OS-EXT-IPS:type'] == "fixed":
+                    ip  = addr_list[0]['addr']
+                    fip = addr_list[1]['addr']
+                else:
+                    ip  = addr_list[1]['addr']
+                    fip = addr_list[0]['addr']
+
+                return {
+                    "addr" : ip,
+                    "faddr": fip,
+                    "id" : server["id"],
+                    "name" : server["name"]
+                }
 
         #TODO: allow them to specify showing all servers?
         #return map(extract_server_details, servers)
