@@ -234,9 +234,6 @@ $(function(){
                 'chain': graph.getChain()
             })}
 
-        console.log(req_data)
-            return
-
         $.ajax({
             url: SERVER_ADDR + "chain", 
             data: req_data,
