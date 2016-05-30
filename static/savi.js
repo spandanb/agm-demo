@@ -251,26 +251,26 @@ $(function(){
 
     })
     
-    $("#chain").click(function(){
-        //Get the IP addrs
-        var connections = [];        
-        _.map(graph.getConnections(), function(link){
-            connections.push([link.source.details.addr,
-                              link.target.details.addr
-            ])
-        })
-        
-        console.log(connections);
-        $.ajax({
-            url: SERVER_ADDR + "chain", 
-            data: {"connections": connections},
-            method: "POST",
-            success: function(resp){
-                console.log("received response: ", resp);
-                
-            }
-        })
-    })
+//    $("#chain").click(function(){
+//        //Get the IP addrs
+//        var connections = [];        
+//        _.map(graph.getConnections(), function(link){
+//            connections.push([link.source.details.addr,
+//                              link.target.details.addr
+//            ])
+//        })
+//        
+//        console.log(connections);
+//        $.ajax({
+//            url: SERVER_ADDR + "chain", 
+//            data: {"connections": connections},
+//            method: "POST",
+//            success: function(resp){
+//                console.log("received response: ", resp);
+//                
+//            }
+//        })
+//    })
     
     
 })
